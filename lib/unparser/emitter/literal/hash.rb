@@ -11,19 +11,6 @@ module Unparser
 
       private
 
-        # Emit value
-        #
-        # @return [undefined]
-        #
-        # @api private
-        #
-        def emit_value
-          value_type = value.type
-          conditional_parentheses(value_type.equal?(:if)) do
-            visit(value)
-          end
-        end
-
         # Pair emitter that emits hash-rocket separated key values
         class Rocket < self
           HASHROCKET = ' => '.freeze
@@ -41,7 +28,7 @@ module Unparser
           def dispatch
             visit(key)
             write(HASHROCKET)
-            emit_value
+            visit(value)
           end
 
         end # Rocket
@@ -62,7 +49,7 @@ module Unparser
           #
           def dispatch
             write(key.children.first.to_s, COLON)
-            emit_value
+            visit(value)
           end
 
         end # Colon

@@ -31,7 +31,7 @@ module Unparser
         #
         def emit_receiver
           visit(receiver)
-          write(T_AMP, T_DOT)
+          write('&.')
         end
 
       end # Regular

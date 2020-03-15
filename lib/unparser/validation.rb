@@ -55,7 +55,6 @@ module Unparser
     def self.from_string(original_source)
       original_node = Unparser
         .parse_either(original_source)
-        .fmap(&Preprocessor.method(:run))
 
       generated_source = original_node
         .lmap(&method(:const_unit))
@@ -64,7 +63,6 @@ module Unparser
       generated_node = generated_source
         .lmap(&method(:const_unit))
         .bind(&Unparser.method(:parse_either))
-        .fmap(&Preprocessor.method(:run))
 
       new(
         identification:   '(string)',
@@ -134,16 +132,5 @@ module Unparser
     # @return [nil]
     def self.const_unit(_value); end
     private_class_method :const_unit
-
-    # Unparse capturing errors
-    #
-    # @param [Parser::AST::Node] node
-    #
-    # @return [Either<RuntimeError, String>]
-    def self.unparse_either(node)
-      MPrelude::Either
-        .wrap_error(RuntimeError) { Unparser.unparse(node) }
-    end
-    private_class_method :unparse_either
   end # Validation
 end # Unparser

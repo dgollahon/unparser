@@ -101,5 +101,18 @@ module Unparser
       end
 
     end # When
+
+    # Emitter for empty else nodes
+    class EmptyElse < self
+      handle :empty_else
+
+    private
+
+      # Perform dispatch
+      #
+      # @return [undefined]
+      def dispatch
+      end
+    end # EmptyElse
   end # Emitter
 end # Unparser

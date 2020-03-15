@@ -41,7 +41,12 @@ module Unparser
       # @api private
       #
       def dispatch
-        delimited(normal_arguments)
+        delimited(normal_arguments) do |node|
+          emitter = emitter(node)
+          conditional_parentheses(!emitter.terminated?) do
+            emitter.write_to_buffer
+          end
+        end
 
         write(', ') if procarg_disambiguator?
 
@@ -101,11 +106,10 @@ module Unparser
 
       MAP = {
         blockarg:  T_AMP,
-        kwrestarg: T_DSPLAT
+        kwrestarg: T_DSPLAT,
       }.freeze
 
-      handle :blockarg
-      handle :kwrestarg
+      handle(*(MAP.keys))
 
       children :name
 

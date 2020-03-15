@@ -7,8 +7,6 @@ module Unparser
     class Post < self
       include Unterminated
 
-      handle :while_post, :until_post
-
       children :condition, :body
 
       MAP = {

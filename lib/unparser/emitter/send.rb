@@ -161,6 +161,8 @@ module Unparser
       def emit_arguments
         if arguments.empty?
           write('()') if receiver.nil? && avoid_clash?
+        elsif attribute_assignment? && arguments.length.equal?(1)
+          visit(arguments.first)
         else
           normal_arguments
         end

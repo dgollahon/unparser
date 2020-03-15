@@ -32,12 +32,24 @@ module Unparser
   # @api private
   #
   def self.unparse(node, comment_array = [])
-    node = Preprocessor.run(node)
+    return '' if node.nil? # yeah empty statement is `nil`
     buffer = Buffer.new
     comments = Comments.new(comment_array)
     root = Emitter::Root.new(Parser::AST::Node.new(:root, [node]), buffer, comments)
     Emitter.emitter(node, root).write_to_buffer
     buffer.content
+  end
+
+  # Unparse capturing errors
+  #
+  # This is mostly useful for writing testing tools against unparser.
+  #
+  # @param [Parser::AST::Node, nil] node
+  #
+  # @return [Either<Exception, String>]
+  def self.unparse_either(node)
+    MPrelude::Either
+      .wrap_error(Exception) { Unparser.unparse(node) }
   end
 
   # Parse string into AST
@@ -100,8 +112,8 @@ module Unparser
   # @param [String] source
   #
   # @return [Parser::Source::Buffer]
-  def self.buffer(source)
-    Parser::Source::Buffer.new('(string)').tap do |buffer|
+  def self.buffer(source, identification = '(string)')
+    Parser::Source::Buffer.new(identification).tap do |buffer|
       buffer.source = source
     end
   end
@@ -109,7 +121,6 @@ end # Unparser
 
 require 'unparser/buffer'
 require 'unparser/node_helpers'
-require 'unparser/preprocessor'
 require 'unparser/comments'
 require 'unparser/constants'
 require 'unparser/dsl'
@@ -126,8 +137,6 @@ require 'unparser/emitter/literal/regexp'
 require 'unparser/emitter/literal/array'
 require 'unparser/emitter/literal/hash'
 require 'unparser/emitter/literal/range'
-require 'unparser/emitter/literal/dynamic_body'
-require 'unparser/emitter/literal/execute_string'
 require 'unparser/emitter/meta'
 require 'unparser/emitter/send'
 require 'unparser/emitter/send/unary'
@@ -170,5 +179,19 @@ require 'unparser/emitter/ensure'
 require 'unparser/emitter/index'
 require 'unparser/emitter/lambda'
 require 'unparser/validation'
+require 'unparser/emitter/numblock'
+require 'unparser/emitter/case_match'
+require 'unparser/emitter/in_pattern'
+require 'unparser/emitter/match_var'
+require 'unparser/emitter/unless_guard'
+require 'unparser/emitter/pin'
+require 'unparser/emitter/array_pattern'
+require 'unparser/emitter/hash_pattern'
+require 'unparser/emitter/const_pattern'
+require 'unparser/emitter/match_alt'
+require 'unparser/emitter/match_as'
+require 'unparser/emitter/in_match'
+require 'unparser/emitter/match_rest'
+require 'unparser/emitter/simple'
 # make it easy for zombie
 require 'unparser/finalize'
